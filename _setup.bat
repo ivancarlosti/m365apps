@@ -26,32 +26,32 @@ goto begin
 
 :op1
 echo Instalação do Office Business + Project + Visio selecionado, aguarde.
-setup.exe /configure InstallOfficeProjectVisio-Business.xml
+setup.exe /configure XMLFiles/InstallOfficeProjectVisio-Business.xml
 goto exit
 
 :op2
 echo Instalação do Office Enterprise + Project + Visio selecionado, aguarde.
-setup.exe /configure InstallOfficeProjectVisio-Enterprise.xml
+setup.exe /configure XMLFiles/InstallOfficeProjectVisio-Enterprise.xml
 goto exit
 
 :op3
 echo Instalação do Office Home + Project + Visio selecionado, aguarde.
-setup.exe /configure InstallOfficeProjectVisio-Home.xml
+setup.exe /configure XMLFiles/InstallOfficeProjectVisio-Home.xml
 goto exit
 
 :op4
 echo Instalação do Office Business selecionado, aguarde.
-setup.exe /configure InstallOffice-Business.xml
+setup.exe /configure XMLFiles/InstallOffice-Business.xml
 goto exit
 
 :op5
 echo Instalação do Office Enterprise selecionado, aguarde.
-setup.exe /configure InstallOffice-Enterprise.xml
+setup.exe /configure XMLFiles/InstallOffice-Enterprise.xml
 goto exit
 
 :op9
 echo Desinstalação do Office selecionado, aguarde.
-.\setup.exe /configure .\UninstallOffice.xml
+setup.exe /configure XMLFiles/UninstallOffice.xml
 goto exit
 
 :exit
