@@ -2,6 +2,12 @@
 
 Script to download and install Microsoft 365 Apps (Office)
 
+<!-- buttons -->
+
+<!-- endbuttons -->
+
+Office installator
+
 <!-- footer -->
 ---
 
