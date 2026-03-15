@@ -11,13 +11,13 @@ echo ============================================================
 echo                MICROSOFT OFFICE INSTALLER
 echo ============================================================
 echo.
-echo 1 - Install Office Business + Project + Visio
+echo 1 - Install Office Business + Project + Visio (US+BR+MX)
 echo 2 - Install Office Business (US+BR+MX)
 echo 3 - Install Office Business (Brazil Only)
-echo 4 - Install Office Enterprise + Project + Visio
+echo 4 - Install Office Enterprise + Project + Visio (US+BR+MX)
 echo 5 - Install Office Enterprise (US+BR+MX)
 echo 6 - Install Office Enterprise (Brazil Only)
-echo 7 - Install Office Home + Project + Visio
+echo 7 - Install Office Home + Project + Visio (US+BR+MX)
 echo 8 - Install Office Home (US+BR+MX)
 echo 9 - Install Office Home (Brazil Only)
 echo 0 - Uninstall All Office Packages
@@ -43,7 +43,7 @@ if %op%==9 goto op9
 if %op%==10 goto op0
 
 :op1
-echo Installing Office Business + Project + Visio, please wait...
+echo Installing Office Business + Project + Visio (US+BR+MX), please wait...
 setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Business.xml"
 goto end
 
@@ -58,7 +58,7 @@ setup.exe /configure "XMLFiles/InstallOffice-Business-BR.xml"
 goto end
 
 :op4
-echo Installing Office Enterprise + Project + Visio, please wait...
+echo Installing Office Enterprise + Project + Visio (US+BR+MX), please wait...
 setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Enterprise.xml"
 goto end
 
@@ -73,7 +73,7 @@ setup.exe /configure "XMLFiles/InstallOffice-Enterprise-BR.xml"
 goto end
 
 :op7
-echo Installing Office Home + Project + Visio, please wait...
+echo Installing Office Home + Project + Visio (US+BR+MX), please wait...
 setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Home.xml"
 goto end
 
