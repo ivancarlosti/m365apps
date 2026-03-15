@@ -18,7 +18,7 @@ Script to download and install Microsoft 365 Apps (Office)
 [![Patreon](https://img.shields.io/badge/Patreon-f96854)][patreon]
 <!-- endbuttons -->
 
-Office installator
+Office installer
 
 <!-- footer -->
 ---
