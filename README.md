@@ -19,12 +19,13 @@ A lightweight, menu-driven script that installs (or uninstalls) **Microsoft 365 
    https://officecdn.microsoft.com/pr/wsus/setup.exe
    ```
 
-   It tries `curl.exe` first (built into Windows 10 1803+ and Windows 11), and falls back to PowerShell `Invoke-WebRequest` with TLS 1.2 if curl is unavailable. The file is saved to `%TEMP%\m365apps_setup.exe`, so the repo never carries an outdated binary.
-3. **Menu** — the script displays the options below and waits for a single keypress via `CHOICE`.
-4. **Install / uninstall** — the chosen option calls:
+   It tries `curl.exe` first (built into Windows 10 1803+ and Windows 11), and falls back to PowerShell `Invoke-WebRequest` with TLS 1.2 if curl is unavailable. The file is saved next to the .bat (replacing any older copy) so it sits beside the `XMLFiles\` folder — this avoids any path-resolution issues when ODT reads the XML.
+3. **Sanity check** — the script verifies that the `XMLFiles\` folder is present next to the .bat before showing the menu.
+4. **Menu** — the script displays the options below and waits for a single keypress via `CHOICE`.
+5. **Install / uninstall** — the chosen option calls:
 
    ```bat
-   "%TEMP%\m365apps_setup.exe" /configure "XMLFiles\<file>.xml"
+   setup.exe /configure "<absolute path>\XMLFiles\<file>.xml"
    ```
 
    The ODT then downloads the requested Office bits from Microsoft and silently installs them according to the XML.

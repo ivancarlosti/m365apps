@@ -8,8 +8,10 @@ cls
 
 :: Always fetch the latest Office Deployment Tool setup.exe from Microsoft's CDN
 :: so the installer is never outdated. URL is the official ODT direct download.
+:: We save it next to this .bat file so it sits alongside the XMLFiles folder,
+:: which removes any ambiguity in how setup.exe resolves the /configure path.
 set "SETUP_URL=https://officecdn.microsoft.com/pr/wsus/setup.exe"
-set "SETUP_EXE=%TEMP%\m365apps_setup.exe"
+set "SETUP_EXE=%~dp0setup.exe"
 
 echo Downloading the latest setup.exe from Microsoft...
 where curl.exe >nul 2>&1
@@ -27,6 +29,16 @@ if not exist "%SETUP_EXE%" (
 )
 echo Download complete.
 echo.
+
+:: Sanity check: make sure the XMLFiles folder is present next to this script.
+if not exist "%~dp0XMLFiles\" (
+    echo.
+    echo ERROR: The XMLFiles folder was not found next to this script.
+    echo Expected location: %~dp0XMLFiles
+    echo Make sure you ran the .bat from inside the m365apps folder.
+    pause
+    exit /b 1
+)
 
 :begin
 echo ============================================================
