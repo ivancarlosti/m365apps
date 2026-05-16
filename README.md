@@ -70,13 +70,13 @@ Variants differ by **product SKU** (`O365BusinessRetail`, `O365ProPlusRetail`, `
 ## Usage
 
 1. Download or clone this repository.
-2. Open an **elevated PowerShell** in the script folder and run:
+2. Double-click [m365apps.bat](m365apps.bat). The launcher will request administrator privileges, clear the Mark-of-the-Web on the .ps1, and start the PowerShell installer with the Bypass execution policy so it runs unsigned.
+
+   If you prefer to run the PowerShell script directly, open an **elevated PowerShell** in the script folder and run:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\m365apps.ps1
    ```
-
-   (Or right-click [m365apps.ps1](m365apps.ps1) → **Run with PowerShell** from an admin session if your execution policy allows it.)
 3. Pick a number from the menu and wait. The Office installer window may stay hidden (silent mode); installation progress can be observed in Task Manager (`OfficeClickToRun.exe`).
 4. When finished, sign in with your Microsoft 365 account to activate.
 
