@@ -66,52 +66,52 @@ if %op%==10 goto op0
 
 :op1
 echo Installing Office Business + Project + Visio, please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOfficeProjectVisio-Business.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOfficeProjectVisio-Business.xml"
 goto end
 
 :op2
 echo Installing Office Business (US+BR+MX), please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Business-US.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Business-US.xml"
 goto end
 
 :op3
 echo Installing Office Business (Brazil), please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Business-BR.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Business-BR.xml"
 goto end
 
 :op4
 echo Installing Office Enterprise + Project + Visio, please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOfficeProjectVisio-Enterprise.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOfficeProjectVisio-Enterprise.xml"
 goto end
 
 :op5
 echo Installing Office Enterprise (US+BR+MX), please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Enterprise-US.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Enterprise-US.xml"
 goto end
 
 :op6
 echo Installing Office Enterprise (Brazil), please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Enterprise-BR.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Enterprise-BR.xml"
 goto end
 
 :op7
 echo Installing Office Home + Project + Visio, please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOfficeProjectVisio-Home.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOfficeProjectVisio-Home.xml"
 goto end
 
 :op8
 echo Installing Office Home (US+BR+MX), please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Home-US.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Home-US.xml"
 goto end
 
 :op9
 echo Installing Office Home (Brazil), please wait...
-"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Home-BR.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Home-BR.xml"
 goto end
 
 :op0
 echo Uninstalling Office, please wait...
-"%SETUP_EXE%" /configure "XMLFiles/UninstallOffice.xml"
+"%SETUP_EXE%" /configure "%~dp0XMLFiles\UninstallOffice.xml"
 goto end
 
 :end
