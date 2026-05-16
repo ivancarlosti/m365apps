@@ -28,6 +28,28 @@ if not exist "%SETUP_EXE%" (
 echo Download complete.
 echo.
 
+:: --- Sanity check: setup.exe must be a valid file (not an HTML error page) ---
+for %%A in ("%SETUP_EXE%") do set "FILE_SIZE=%%~zA"
+if %FILE_SIZE% LSS 1000000 (
+    echo.
+    echo WARNING: setup.exe is only %FILE_SIZE% bytes (expected ^>= 1 MB).
+    echo The downloaded file might be an error page or corrupted.
+    echo.
+    echo Retrying download via PowerShell fallback...
+    del "%SETUP_EXE%" 2>nul
+    powershell -NoProfile -Command "try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SETUP_URL%' -OutFile '%SETUP_EXE%' -UseBasicParsing } catch { exit 1 }"
+)
+if not exist "%SETUP_EXE%" (
+    echo.
+    echo ERROR: Failed to download a valid setup.exe.
+    echo Check your internet connection / firewall and try again.
+    pause
+    exit /b 1
+)
+for %%A in ("%SETUP_EXE%") do set "FILE_SIZE=%%~zA"
+echo setup.exe is %FILE_SIZE% bytes — OK.
+echo.
+
 :: --- Sanity check: XMLFiles folder must sit next to this .bat ---------------
 if not exist "XMLFiles\" (
     echo.
@@ -80,7 +102,7 @@ exit /b 0
 
 :: --- Subroutine: validate XML, then invoke setup.exe with a relative path ---
 :run
-set "XML_REL=%~dp0XMLFiles\%~1"
+set "XML_REL=XMLFiles\%~1"
 echo.
 echo === %~2 ===
 echo Working directory: %cd%
