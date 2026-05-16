@@ -6,6 +6,28 @@ cd /d "%~dp0"
 chcp 65001 >nul
 cls
 
+:: Always fetch the latest Office Deployment Tool setup.exe from Microsoft's CDN
+:: so the installer is never outdated. URL is the official ODT direct download.
+set "SETUP_URL=https://officecdn.microsoft.com/pr/wsus/setup.exe"
+set "SETUP_EXE=%TEMP%\m365apps_setup.exe"
+
+echo Downloading the latest setup.exe from Microsoft...
+where curl.exe >nul 2>&1
+if %errorlevel%==0 (
+    curl.exe -L -s -o "%SETUP_EXE%" "%SETUP_URL%"
+) else (
+    powershell -NoProfile -Command "try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SETUP_URL%' -OutFile '%SETUP_EXE%' -UseBasicParsing } catch { exit 1 }"
+)
+
+if not exist "%SETUP_EXE%" (
+    echo.
+    echo Failed to download setup.exe. Check your internet connection and try again.
+    pause
+    exit /b 1
+)
+echo Download complete.
+echo.
+
 :begin
 echo ============================================================
 echo                MICROSOFT OFFICE INSTALLER
@@ -44,52 +66,52 @@ if %op%==10 goto op0
 
 :op1
 echo Installing Office Business + Project + Visio, please wait...
-setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Business.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOfficeProjectVisio-Business.xml"
 goto end
 
 :op2
 echo Installing Office Business (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Business-US.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Business-US.xml"
 goto end
 
 :op3
 echo Installing Office Business (Brazil), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Business-BR.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Business-BR.xml"
 goto end
 
 :op4
 echo Installing Office Enterprise + Project + Visio, please wait...
-setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Enterprise.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOfficeProjectVisio-Enterprise.xml"
 goto end
 
 :op5
 echo Installing Office Enterprise (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Enterprise-US.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Enterprise-US.xml"
 goto end
 
 :op6
 echo Installing Office Enterprise (Brazil), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Enterprise-BR.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Enterprise-BR.xml"
 goto end
 
 :op7
 echo Installing Office Home + Project + Visio, please wait...
-setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Home.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOfficeProjectVisio-Home.xml"
 goto end
 
 :op8
 echo Installing Office Home (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Home-US.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Home-US.xml"
 goto end
 
 :op9
 echo Installing Office Home (Brazil), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Home-BR.xml"
+"%SETUP_EXE%" /configure "XMLFiles/InstallOffice-Home-BR.xml"
 goto end
 
 :op0
 echo Uninstalling Office, please wait...
-setup.exe /configure "XMLFiles/UninstallOffice.xml"
+"%SETUP_EXE%" /configure "XMLFiles/UninstallOffice.xml"
 goto end
 
 :end
