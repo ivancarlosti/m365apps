@@ -28,7 +28,7 @@ Clear-Host
 # binary, so we now grab the official Office Deployment Tool self-extractor
 # from the Microsoft Download Center and extract setup.exe from it. The
 # version below can be bumped to a newer build when Microsoft releases one.
-$OdtUrl     = 'https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_18827-20140.exe'
+$OdtUrl     = 'https://download.microsoft.com/download/6c1eeb25-cf8b-41d9-8d0d-cc1dbc032140/officedeploymenttool_19929-20090.exe'
 $OdtPackage = '.\odt_installer.exe'
 $SetupExe   = '.\setup.exe'
 $XmlFolder  = '.\XMLFiles'

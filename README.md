@@ -16,7 +16,7 @@ A lightweight, menu-driven script that installs (or uninstalls) **Microsoft 365 
 2. **Self-update** — at every run, the script downloads the official Office Deployment Tool self-extractor from the Microsoft Download Center:
 
    ```
-   https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_18827-20140.exe
+   https://download.microsoft.com/download/6c1eeb25-cf8b-41d9-8d0d-cc1dbc032140/officedeploymenttool_19929-20090.exe
    ```
 
    It uses PowerShell `Invoke-WebRequest` with TLS 1.2, then runs the package with `/quiet /extract:<script folder>` to drop a fresh `setup.exe` next to the script. The file sits beside the `XMLFiles\` folder — this avoids any path-resolution issues when ODT reads the XML.
@@ -70,9 +70,9 @@ Variants differ by **product SKU** (`O365BusinessRetail`, `O365ProPlusRetail`, `
 ## Usage
 
 1. Download or clone this repository.
-2. Double-click [m365apps.bat](m365apps.bat). The launcher will request administrator privileges, clear the Mark-of-the-Web on the .ps1, and start the PowerShell installer with the Bypass execution policy so it runs unsigned.
+2. Double-click [m365apps.bat](m365apps.bat). The launcher clears the Mark-of-the-Web on the .ps1 and starts the PowerShell installer with the Bypass execution policy so it runs unsigned. `setup.exe` raises its own UAC prompt when it needs admin rights, so no manual "Run as administrator" is required.
 
-   If you prefer to run the PowerShell script directly, open an **elevated PowerShell** in the script folder and run:
+   If you prefer to run the PowerShell script directly, open PowerShell in the script folder and run:
 
    ```powershell
    powershell -ExecutionPolicy Bypass -File .\m365apps.ps1
