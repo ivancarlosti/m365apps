@@ -80,7 +80,7 @@ exit /b 0
 
 :: --- Subroutine: validate XML, then invoke setup.exe with a relative path ---
 :run
-set "XML_REL=XMLFiles\%~1"
+set "XML_REL=%~dp0XMLFiles\%~1"
 echo.
 echo === %~2 ===
 echo Working directory: %cd%
