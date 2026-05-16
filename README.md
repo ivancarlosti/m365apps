@@ -8,24 +8,24 @@ A lightweight, menu-driven script that installs (or uninstalls) **Microsoft 365 
 
 ## What it does
 
-`m365apps.bat` shows a numbered menu, downloads the latest `setup.exe` (ODT) straight from Microsoft, and runs it against the XML configuration that matches your selection. The XML files in [XMLFiles/](XMLFiles/) describe exactly which products, languages and channels to install.
+`m365apps.ps1` shows a numbered menu, downloads the latest Office Deployment Tool (ODT) straight from Microsoft, extracts `setup.exe` next to the script and runs it against the XML configuration that matches your selection. The XML files in [XMLFiles/](XMLFiles/) describe exactly which products, languages and channels to install.
 
 ## How it works
 
-1. **Boot** — [m365apps.bat](m365apps.bat) sets its working directory to the script folder and switches the console to UTF-8.
-2. **Self-update** — at every run, the script downloads the latest Office Deployment Tool binary from Microsoft's official CDN:
+1. **Boot** — [m365apps.ps1](m365apps.ps1) sets its working directory to the script folder and switches the console to UTF-8.
+2. **Self-update** — at every run, the script downloads the official Office Deployment Tool self-extractor from the Microsoft Download Center:
 
    ```
-   https://officecdn.microsoft.com/pr/wsus/setup.exe
+   https://download.microsoft.com/download/2/7/A/27AF1BE6-DD20-4CB4-B154-EBAB8A7D4A7E/officedeploymenttool_18827-20140.exe
    ```
 
-   It tries `curl.exe` first (built into Windows 10 1803+ and Windows 11), and falls back to PowerShell `Invoke-WebRequest` with TLS 1.2 if curl is unavailable. The file is saved next to the .bat (replacing any older copy) so it sits beside the `XMLFiles\` folder — this avoids any path-resolution issues when ODT reads the XML.
-3. **Sanity check** — the script verifies that the `XMLFiles\` folder is present next to the .bat before showing the menu.
-4. **Menu** — the script displays the options below and waits for a single keypress via `CHOICE`.
+   It uses PowerShell `Invoke-WebRequest` with TLS 1.2, then runs the package with `/quiet /extract:<script folder>` to drop a fresh `setup.exe` next to the script. The file sits beside the `XMLFiles\` folder — this avoids any path-resolution issues when ODT reads the XML.
+3. **Sanity check** — the script verifies that the `XMLFiles\` folder is present next to the .ps1 before showing the menu.
+4. **Menu** — the script displays the options below and waits for the user to type a number.
 5. **Install / uninstall** — the chosen option calls:
 
-   ```bat
-   setup.exe /configure "<absolute path>\XMLFiles\<file>.xml"
+   ```powershell
+   .\setup.exe /configure .\XMLFiles\<file>.xml
    ```
 
    The ODT then downloads the requested Office bits from Microsoft and silently installs them according to the XML.
@@ -63,14 +63,20 @@ Variants differ by **product SKU** (`O365BusinessRetail`, `O365ProPlusRetail`, `
 
 ## Requirements
 
-- **Windows 10 / 11** (x64). The script uses built-in `curl.exe` or PowerShell — no extra dependencies.
-- **Administrator privileges** — right-click `m365apps.bat` and choose **Run as administrator**, otherwise the Office Deployment Tool cannot write to Program Files.
+- **Windows 10 / 11** (x64). The script uses built-in PowerShell — no extra dependencies.
+- **Administrator privileges** — run the script elevated, otherwise the Office Deployment Tool cannot write to Program Files.
 - **Active internet connection** — both the ODT itself and the Office payload are downloaded at runtime.
 
 ## Usage
 
 1. Download or clone this repository.
-2. Right-click [m365apps.bat](m365apps.bat) → **Run as administrator**.
+2. Open an **elevated PowerShell** in the script folder and run:
+
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File .\m365apps.ps1
+   ```
+
+   (Or right-click [m365apps.ps1](m365apps.ps1) → **Run with PowerShell** from an admin session if your execution policy allows it.)
 3. Pick a number from the menu and wait. The Office installer window may stay hidden (silent mode); installation progress can be observed in Task Manager (`OfficeClickToRun.exe`).
 4. When finished, sign in with your Microsoft 365 account to activate.
 
