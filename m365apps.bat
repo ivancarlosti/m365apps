@@ -1,18 +1,16 @@
 @echo off
-setlocal enabledelayedexpansion
+setlocal
 :: Force the script to run from the folder where it is saved
 cd /d "%~dp0"
-:: Set console encoding to UTF-8
-chcp 65001 >nul
 cls
 
-:: Always fetch the latest Office Deployment Tool setup.exe from Microsoft's CDN
-:: so the installer is never outdated. URL is the official ODT direct download.
-:: We save it next to this .bat file so it sits alongside the XMLFiles folder,
-:: which removes any ambiguity in how setup.exe resolves the /configure path.
+:: Absolute, fully-resolved paths. Avoids any CWD or codepage surprises.
+set "SCRIPT_DIR=%~dp0"
+set "XML_DIR=%SCRIPT_DIR%XMLFiles"
+set "SETUP_EXE=%SCRIPT_DIR%setup.exe"
 set "SETUP_URL=https://officecdn.microsoft.com/pr/wsus/setup.exe"
-set "SETUP_EXE=%~dp0setup.exe"
 
+:: --- Download the latest Office Deployment Tool setup.exe -------------------
 echo Downloading the latest setup.exe from Microsoft...
 where curl.exe >nul 2>&1
 if %errorlevel%==0 (
@@ -20,115 +18,77 @@ if %errorlevel%==0 (
 ) else (
     powershell -NoProfile -Command "try { [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -Uri '%SETUP_URL%' -OutFile '%SETUP_EXE%' -UseBasicParsing } catch { exit 1 }"
 )
-
 if not exist "%SETUP_EXE%" (
     echo.
-    echo Failed to download setup.exe. Check your internet connection and try again.
+    echo ERROR: Failed to download setup.exe. Check your internet connection.
     pause
     exit /b 1
 )
 echo Download complete.
 echo.
 
-:: Sanity check: make sure the XMLFiles folder is present next to this script.
-if not exist "%~dp0XMLFiles\" (
+:: --- Sanity check: XMLFiles folder must sit next to this .bat ---------------
+if not exist "%XML_DIR%\" (
     echo.
-    echo ERROR: The XMLFiles folder was not found next to this script.
-    echo Expected location: %~dp0XMLFiles
-    echo Make sure you ran the .bat from inside the m365apps folder.
+    echo ERROR: The XMLFiles folder was not found.
+    echo Expected location: %XML_DIR%
+    echo Make sure you ran m365apps.bat from inside the m365apps folder
+    echo and that the XMLFiles folder is present.
     pause
     exit /b 1
 )
 
-:begin
+:menu
 echo ============================================================
 echo                MICROSOFT OFFICE INSTALLER
 echo ============================================================
 echo.
-echo 1 - Install Office Business + Project + Visio
-echo 2 - Install Office Business (US+BR+MX)
-echo 3 - Install Office Business (Brazil Only)
-echo 4 - Install Office Enterprise + Project + Visio
-echo 5 - Install Office Enterprise (US+BR+MX)
-echo 6 - Install Office Enterprise (Brazil Only)
-echo 7 - Install Office Home + Project + Visio
-echo 8 - Install Office Home (US+BR+MX)
-echo 9 - Install Office Home (Brazil Only)
-echo 0 - Uninstall All Office Packages
+echo  1 - Install Office Business + Project + Visio
+echo  2 - Install Office Business (US+BR+MX)
+echo  3 - Install Office Business (Brazil Only)
+echo  4 - Install Office Enterprise + Project + Visio
+echo  5 - Install Office Enterprise (US+BR+MX)
+echo  6 - Install Office Enterprise (Brazil Only)
+echo  7 - Install Office Home + Project + Visio
+echo  8 - Install Office Home (US+BR+MX)
+echo  9 - Install Office Home (Brazil Only)
+echo  0 - Uninstall All Office Packages
 echo.
 echo ============================================================
-
-:: Use CHOICE command for better reliability on Windows 11
 echo Please press the number of your choice...
 choice /c 1234567890 /n /m "Selection: "
+set "op=%errorlevel%"
 
-:: Errorlevel 1 corresponds to "1", errorlevel 10 corresponds to "0"
-set op=%errorlevel%
-
-if %op%==1 goto op1
-if %op%==2 goto op2
-if %op%==3 goto op3
-if %op%==4 goto op4
-if %op%==5 goto op5
-if %op%==6 goto op6
-if %op%==7 goto op7
-if %op%==8 goto op8
-if %op%==9 goto op9
-if %op%==10 goto op0
-
-:op1
-echo Installing Office Business + Project + Visio, please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOfficeProjectVisio-Business.xml"
-goto end
-
-:op2
-echo Installing Office Business (US+BR+MX), please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Business-US.xml"
-goto end
-
-:op3
-echo Installing Office Business (Brazil), please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Business-BR.xml"
-goto end
-
-:op4
-echo Installing Office Enterprise + Project + Visio, please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOfficeProjectVisio-Enterprise.xml"
-goto end
-
-:op5
-echo Installing Office Enterprise (US+BR+MX), please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Enterprise-US.xml"
-goto end
-
-:op6
-echo Installing Office Enterprise (Brazil), please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Enterprise-BR.xml"
-goto end
-
-:op7
-echo Installing Office Home + Project + Visio, please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOfficeProjectVisio-Home.xml"
-goto end
-
-:op8
-echo Installing Office Home (US+BR+MX), please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Home-US.xml"
-goto end
-
-:op9
-echo Installing Office Home (Brazil), please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\InstallOffice-Home-BR.xml"
-goto end
-
-:op0
-echo Uninstalling Office, please wait...
-"%SETUP_EXE%" /configure "%~dp0XMLFiles\UninstallOffice.xml"
-goto end
+if "%op%"=="1"  call :run "InstallOfficeProjectVisio-Business.xml"   "Office Business + Project + Visio" & goto end
+if "%op%"=="2"  call :run "InstallOffice-Business-US.xml"            "Office Business (US+BR+MX)"        & goto end
+if "%op%"=="3"  call :run "InstallOffice-Business-BR.xml"            "Office Business (Brazil)"          & goto end
+if "%op%"=="4"  call :run "InstallOfficeProjectVisio-Enterprise.xml" "Office Enterprise + Project + Visio" & goto end
+if "%op%"=="5"  call :run "InstallOffice-Enterprise-US.xml"          "Office Enterprise (US+BR+MX)"      & goto end
+if "%op%"=="6"  call :run "InstallOffice-Enterprise-BR.xml"          "Office Enterprise (Brazil)"        & goto end
+if "%op%"=="7"  call :run "InstallOfficeProjectVisio-Home.xml"       "Office Home + Project + Visio"     & goto end
+if "%op%"=="8"  call :run "InstallOffice-Home-US.xml"                "Office Home (US+BR+MX)"            & goto end
+if "%op%"=="9"  call :run "InstallOffice-Home-BR.xml"                "Office Home (Brazil)"              & goto end
+if "%op%"=="10" call :run "UninstallOffice.xml"                       "Uninstall Office"                  & goto end
 
 :end
 echo.
 echo ============================================================
 echo Process finished. Please check if the Office Setup started.
 pause
-exit
+exit /b 0
+
+:: --- Subroutine: validate XML, then invoke setup.exe ------------------------
+:run
+set "XML=%XML_DIR%\%~1"
+echo.
+echo === %~2 ===
+echo Config file: %XML%
+if not exist "%XML%" (
+    echo.
+    echo ERROR: Configuration file not found at the path above.
+    echo Make sure XMLFiles\%~1 exists next to m365apps.bat.
+    goto :eof
+)
+echo Running setup.exe...
+"%SETUP_EXE%" /configure "%XML%"
+goto :eof
