@@ -94,12 +94,13 @@ A `choice /c 1234567890ABCDEFQ` prompt presents three grouped sections:
 
 | Key | Action | Registry change |
 | :-: | :----- | :-------------- |
-| A | Allow OneDrive Personal sync          | delete `HKCU\Software\Microsoft\OneDrive\DisablePersonalSync` |
+| A | Allow OneDrive Personal sync          | set `HKCU\Software\Microsoft\OneDrive\DisablePersonalSync = 0` |
 | B | Block OneDrive Personal sync          | set `HKCU\Software\Microsoft\OneDrive\DisablePersonalSync = 1` |
-| C | Show Office Insider button            | set `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior = 2` |
-| D | Hide Office Insider button            | set `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior = 0` |
-| E | Remove Office Insider button policy   | delete `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior` |
-| F | Remove Office Update Channel policy   | delete `HKLM\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate\updatebranch` |
+| C | Remove OneDrive Personal sync policy  | delete `HKCU\Software\Microsoft\OneDrive\DisablePersonalSync` |
+| D | Show Office Insider button            | set `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior = 2` |
+| E | Hide Office Insider button            | set `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior = 0` |
+| F | Remove Office Insider button policy   | delete `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior` |
+| G | Remove Office Update Channel policy   | delete `HKLM\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate\updatebranch` |
 | Q | Quit | — |
 
 Install/Uninstall selections set `DESC` (label shown to the user) and `XML`
