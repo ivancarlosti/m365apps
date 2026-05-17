@@ -28,6 +28,10 @@ configurations under [XMLFiles/](XMLFiles/) so you can install or uninstall
 Microsoft 365 Apps (Business, Enterprise or Home, with optional Project and
 Visio) without manually crafting a configuration file.
 
+It also bundles a few one-click registry tweaks (OneDrive Personal sync,
+Office Insider button visibility, Office Update Channel reset) directly in
+the menu — no extra `.reg` files needed.
+
 ## 🚀 Usage
 
 1. Download the latest release (or clone this repo).
@@ -64,7 +68,9 @@ SETUP_EXE = %TEMP%\m365apps\setup.exe
   clear message.
 
 ### 3. Interactive menu
-A `choice /c 1234567890` prompt presents ten options:
+A `choice /c 1234567890ABCDEQ` prompt presents three grouped sections:
+
+**Install**
 
 | Key | Action |
 | :-: | :----- |
@@ -77,11 +83,27 @@ A `choice /c 1234567890` prompt presents ten options:
 | 7 | Install Office Home + Project + Visio (US + BR + MX) |
 | 8 | Install Office Home (US + BR + MX) |
 | 9 | Install Office Home (Brazil only) |
+
+**Uninstall**
+
+| Key | Action |
+| :-: | :----- |
 | 0 | Uninstall all Office packages |
 
-Each selection sets `DESC` (label shown to the user) and `XML` (path to the
-matching configuration under [XMLFiles/](XMLFiles/)) and jumps to a single
-`:run` label that invokes:
+**Tweaks**
+
+| Key | Action | Registry change |
+| :-: | :----- | :-------------- |
+| A | Allow OneDrive Personal sync | delete `HKCU\Software\Microsoft\OneDrive\DisablePersonalSync` |
+| B | Block OneDrive Personal sync | set `HKCU\Software\Microsoft\OneDrive\DisablePersonalSync = 1` |
+| C | Show Office Insider button   | set `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior = 2` |
+| D | Hide Office Insider button   | set `HKCU\Software\Policies\Microsoft\office\16.0\common\insiderslabbehavior = 0` |
+| E | Reset Office Update Channel  | delete `HKLM\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate\updatebranch` |
+| Q | Quit | — |
+
+Install/Uninstall selections set `DESC` (label shown to the user) and `XML`
+(path to the matching configuration under [XMLFiles/](XMLFiles/)) and jump
+to the `:runOffice` label that invokes:
 
 ```
 "%SETUP_EXE%" /configure "%XML%"
@@ -89,6 +111,9 @@ matching configuration under [XMLFiles/](XMLFiles/)) and jumps to a single
 
 This is the standard ODT command — `setup.exe` reads the XML, contacts
 Microsoft's CDN and installs/uninstalls the requested products and languages.
+
+Tweaks apply their registry change in-place via `reg add` / `reg delete` and
+return to the menu so you can chain several tweaks in one session.
 
 ### 4. Cleanup
 When `setup.exe` returns control, the script deletes the temporary
