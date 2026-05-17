@@ -9,14 +9,14 @@ if "%1"=="%Variable%" (
   echo Please right-click this file and select "Run as administrator".
   echo Press any key to exit.
   pause >nul 2>&1
-  exit
+  exit /b
 )
 cmd /u /c echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "%~0", "%Variable%", "", "runas", 1 > "%temp%\getadmin.vbs"
 cscript //nologo "%temp%\getadmin.vbs"
-exit
+exit /b
 
 :Privileges_got
-setlocal EnableExtensions EnableDelayedExpansion
+setlocal EnableExtensions
 cd /d "%~dp0"
 
 set "SETUP_URL=https://officecdn.microsoft.com/pr/wsus/setup.exe"
@@ -47,36 +47,42 @@ echo   0 - Uninstall All Office Packages
 echo.
 echo  [ TWEAKS ]
 echo.
-echo   A - Allow  OneDrive Personal sync
+echo   A - Allow  OneDrive Personal sync (remove block)
 echo   B - Block  OneDrive Personal sync
 echo   C - Show   Office Insider button
 echo   D - Hide   Office Insider button
-echo   E - Reset  Office Update Channel policy
+echo   E - Remove Office Insider button policy (registry value)
+echo   F - Remove Office Update Channel policy (registry value)
 echo.
 echo   Q - Quit
 echo.
 echo ============================================================
 echo.
-echo Please press the key for your choice...
-choice /c 1234567890ABCDEQ /n /m "Selection: "
-set op=%errorlevel%
+choice /c 1234567890ABCDEFQ /n /m "Selection: "
+set "op=%errorlevel%"
 
-if %op%==1  (set "DESC=Office Business + Project + Visio (US+BR+MX)"   & set "XML=XMLFiles/InstallOfficeProjectVisio-Business.xml"   & goto runOffice)
-if %op%==2  (set "DESC=Office Business (US+BR+MX)"                     & set "XML=XMLFiles/InstallOffice-Business-US.xml"           & goto runOffice)
-if %op%==3  (set "DESC=Office Business (Brazil)"                       & set "XML=XMLFiles/InstallOffice-Business-BR.xml"           & goto runOffice)
-if %op%==4  (set "DESC=Office Enterprise + Project + Visio (US+BR+MX)" & set "XML=XMLFiles/InstallOfficeProjectVisio-Enterprise.xml" & goto runOffice)
-if %op%==5  (set "DESC=Office Enterprise (US+BR+MX)"                   & set "XML=XMLFiles/InstallOffice-Enterprise-US.xml"         & goto runOffice)
-if %op%==6  (set "DESC=Office Enterprise (Brazil)"                     & set "XML=XMLFiles/InstallOffice-Enterprise-BR.xml"         & goto runOffice)
-if %op%==7  (set "DESC=Office Home + Project + Visio (US+BR+MX)"       & set "XML=XMLFiles/InstallOfficeProjectVisio-Home.xml"      & goto runOffice)
-if %op%==8  (set "DESC=Office Home (US+BR+MX)"                         & set "XML=XMLFiles/InstallOffice-Home-US.xml"               & goto runOffice)
-if %op%==9  (set "DESC=Office Home (Brazil)"                           & set "XML=XMLFiles/InstallOffice-Home-BR.xml"               & goto runOffice)
-if %op%==10 (set "DESC=Uninstall All Office Packages"                  & set "XML=XMLFiles/UninstallOffice.xml"                     & goto runOffice)
-if %op%==11 goto tweakAllowOneDrive
-if %op%==12 goto tweakBlockOneDrive
-if %op%==13 goto tweakShowInsider
-if %op%==14 goto tweakHideInsider
-if %op%==15 goto tweakResetBranch
-if %op%==16 goto quit
+set "DESC="
+set "XML="
+
+if "%op%"=="1"  set "DESC=Office Business + Project + Visio (US+BR+MX)"    & set "XML=XMLFiles/InstallOfficeProjectVisio-Business.xml"
+if "%op%"=="2"  set "DESC=Office Business (US+BR+MX)"                      & set "XML=XMLFiles/InstallOffice-Business-US.xml"
+if "%op%"=="3"  set "DESC=Office Business (Brazil)"                        & set "XML=XMLFiles/InstallOffice-Business-BR.xml"
+if "%op%"=="4"  set "DESC=Office Enterprise + Project + Visio (US+BR+MX)"  & set "XML=XMLFiles/InstallOfficeProjectVisio-Enterprise.xml"
+if "%op%"=="5"  set "DESC=Office Enterprise (US+BR+MX)"                    & set "XML=XMLFiles/InstallOffice-Enterprise-US.xml"
+if "%op%"=="6"  set "DESC=Office Enterprise (Brazil)"                      & set "XML=XMLFiles/InstallOffice-Enterprise-BR.xml"
+if "%op%"=="7"  set "DESC=Office Home + Project + Visio (US+BR+MX)"        & set "XML=XMLFiles/InstallOfficeProjectVisio-Home.xml"
+if "%op%"=="8"  set "DESC=Office Home (US+BR+MX)"                          & set "XML=XMLFiles/InstallOffice-Home-US.xml"
+if "%op%"=="9"  set "DESC=Office Home (Brazil)"                            & set "XML=XMLFiles/InstallOffice-Home-BR.xml"
+if "%op%"=="10" set "DESC=Uninstall All Office Packages"                   & set "XML=XMLFiles/UninstallOffice.xml"
+
+if defined XML goto runOffice
+if "%op%"=="11" goto tweakAllowOneDrive
+if "%op%"=="12" goto tweakBlockOneDrive
+if "%op%"=="13" goto tweakShowInsider
+if "%op%"=="14" goto tweakHideInsider
+if "%op%"=="15" goto tweakRemoveInsider
+if "%op%"=="16" goto tweakRemoveBranch
+if "%op%"=="17" goto quit
 goto menu
 
 :runOffice
@@ -92,22 +98,23 @@ if not exist "%SETUP_EXE%" (
     echo.
     echo ERROR: Failed to download setup.exe from Microsoft.
     echo Please check your internet connection and try again.
+    echo.
     pause
-    goto end
+    goto cleanup
 )
 echo Download complete.
 echo.
 echo Running: %DESC%, please wait...
 "%SETUP_EXE%" /configure "%XML%"
-goto end
+goto cleanup
 
 :tweakAllowOneDrive
 echo.
 echo ------------------------------------------------------------
-echo Allowing OneDrive Personal sync...
+echo Allowing OneDrive Personal sync (removing policy value)...
 echo ------------------------------------------------------------
 reg delete "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /f >nul 2>&1
-echo Done. OneDrive Personal sync is now allowed (policy removed).
+echo Done.
 goto pauseAndMenu
 
 :tweakBlockOneDrive
@@ -115,17 +122,17 @@ echo.
 echo ------------------------------------------------------------
 echo Blocking OneDrive Personal sync...
 echo ------------------------------------------------------------
-reg add "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /t REG_DWORD /d 1 /f >nul
-echo Done. OneDrive Personal sync is now blocked.
+reg add "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /t REG_DWORD /d 1 /f >nul 2>&1
+echo Done.
 goto pauseAndMenu
 
 :tweakShowInsider
 echo.
 echo ------------------------------------------------------------
-echo Showing Office Insider button...
+echo Showing Office Insider button (File ^> Account)...
 echo ------------------------------------------------------------
-reg add "HKCU\Software\Policies\Microsoft\office\16.0\common" /v "insiderslabbehavior" /t REG_DWORD /d 2 /f >nul
-echo Done. Office Insider button is now visible (File ^> Account).
+reg add "HKCU\Software\Policies\Microsoft\office\16.0\common" /v "insiderslabbehavior" /t REG_DWORD /d 2 /f >nul 2>&1
+echo Done.
 goto pauseAndMenu
 
 :tweakHideInsider
@@ -133,17 +140,26 @@ echo.
 echo ------------------------------------------------------------
 echo Hiding Office Insider button...
 echo ------------------------------------------------------------
-reg add "HKCU\Software\Policies\Microsoft\office\16.0\common" /v "insiderslabbehavior" /t REG_DWORD /d 0 /f >nul
-echo Done. Office Insider button is now hidden.
+reg add "HKCU\Software\Policies\Microsoft\office\16.0\common" /v "insiderslabbehavior" /t REG_DWORD /d 0 /f >nul 2>&1
+echo Done.
 goto pauseAndMenu
 
-:tweakResetBranch
+:tweakRemoveInsider
 echo.
 echo ------------------------------------------------------------
-echo Resetting Office Update Channel policy...
+echo Removing Office Insider button policy (registry value)...
+echo ------------------------------------------------------------
+reg delete "HKCU\Software\Policies\Microsoft\office\16.0\common" /v "insiderslabbehavior" /f >nul 2>&1
+echo Done.
+goto pauseAndMenu
+
+:tweakRemoveBranch
+echo.
+echo ------------------------------------------------------------
+echo Removing Office Update Channel policy (registry value)...
 echo ------------------------------------------------------------
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" /v "updatebranch" /f >nul 2>&1
-echo Done. Office Update Channel policy removed (default applies).
+echo Done.
 goto pauseAndMenu
 
 :pauseAndMenu
@@ -151,16 +167,17 @@ echo.
 pause
 goto menu
 
-:end
+:cleanup
 echo.
 echo ============================================================
 echo Process finished. Please check if the Office Setup started.
 echo Cleaning up temporary files...
 if exist "%SETUP_EXE%" del /f /q "%SETUP_EXE%" >nul 2>&1
 if exist "%SETUP_DIR%" rmdir "%SETUP_DIR%" >nul 2>&1
+echo.
 pause
-exit
+goto menu
 
 :quit
 endlocal
-exit
+exit /b
