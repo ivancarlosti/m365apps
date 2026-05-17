@@ -47,18 +47,19 @@ echo   0 - Uninstall All Office Packages
 echo.
 echo  [ TWEAKS ]
 echo.
-echo   A - Allow  OneDrive Personal sync (remove block)
+echo   A - Allow  OneDrive Personal sync
 echo   B - Block  OneDrive Personal sync
-echo   C - Show   Office Insider button
-echo   D - Hide   Office Insider button
-echo   E - Remove Office Insider button policy (registry value)
-echo   F - Remove Office Update Channel policy (registry value)
+echo   C - Remove OneDrive Personal sync policy
+echo   D - Show   Office Insider button
+echo   E - Hide   Office Insider button
+echo   F - Remove Office Insider button policy
+echo   G - Remove Office Update Channel policy
 echo.
 echo   Q - Quit
 echo.
 echo ============================================================
 echo.
-choice /c 1234567890ABCDEFQ /n /m "Selection: "
+choice /c 1234567890ABCDEFGQ /n /m "Selection: "
 set "op=%errorlevel%"
 
 set "DESC="
@@ -78,11 +79,12 @@ if "%op%"=="10" set "DESC=Uninstall All Office Packages"                   & set
 if defined XML goto runOffice
 if "%op%"=="11" goto tweakAllowOneDrive
 if "%op%"=="12" goto tweakBlockOneDrive
-if "%op%"=="13" goto tweakShowInsider
-if "%op%"=="14" goto tweakHideInsider
-if "%op%"=="15" goto tweakRemoveInsider
-if "%op%"=="16" goto tweakRemoveBranch
-if "%op%"=="17" goto quit
+if "%op%"=="13" goto tweakRemoveOneDrive
+if "%op%"=="14" goto tweakShowInsider
+if "%op%"=="15" goto tweakHideInsider
+if "%op%"=="16" goto tweakRemoveInsider
+if "%op%"=="17" goto tweakRemoveBranch
+if "%op%"=="18" goto quit
 goto menu
 
 :runOffice
@@ -111,9 +113,9 @@ goto cleanup
 :tweakAllowOneDrive
 echo.
 echo ------------------------------------------------------------
-echo Allowing OneDrive Personal sync (removing policy value)...
+echo Allowing OneDrive Personal sync...
 echo ------------------------------------------------------------
-reg delete "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /t REG_DWORD /d 0 /f >nul 2>&1
 echo Done.
 goto pauseAndMenu
 
@@ -123,6 +125,15 @@ echo ------------------------------------------------------------
 echo Blocking OneDrive Personal sync...
 echo ------------------------------------------------------------
 reg add "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /t REG_DWORD /d 1 /f >nul 2>&1
+echo Done.
+goto pauseAndMenu
+
+:tweakRemoveOneDrive
+echo.
+echo ------------------------------------------------------------
+echo Removing OneDrive Personal sync policy...
+echo ------------------------------------------------------------
+reg delete "HKCU\Software\Microsoft\OneDrive" /v "DisablePersonalSync" /f >nul 2>&1
 echo Done.
 goto pauseAndMenu
 
@@ -147,7 +158,7 @@ goto pauseAndMenu
 :tweakRemoveInsider
 echo.
 echo ------------------------------------------------------------
-echo Removing Office Insider button policy (registry value)...
+echo Removing Office Insider button policy...
 echo ------------------------------------------------------------
 reg delete "HKCU\Software\Policies\Microsoft\office\16.0\common" /v "insiderslabbehavior" /f >nul 2>&1
 echo Done.
@@ -156,7 +167,7 @@ goto pauseAndMenu
 :tweakRemoveBranch
 echo.
 echo ------------------------------------------------------------
-echo Removing Office Update Channel policy (registry value)...
+echo Removing Office Update Channel policy...
 echo ------------------------------------------------------------
 reg delete "HKLM\SOFTWARE\Policies\Microsoft\office\16.0\common\officeupdate" /v "updatebranch" /f >nul 2>&1
 echo Done.
