@@ -1,10 +1,23 @@
 @echo off
-setlocal enabledelayedexpansion
-:: Force the script to run from the folder where it is saved
-cd /d "%~dp0"
-:: Set console encoding to UTF-8
 chcp 65001 >nul
-cls
+
+:: Elevate to Administrator
+Set "Variable=0" & if exist "%temp%\getadmin.vbs" del "%temp%\getadmin.vbs"
+fsutil dirty query %systemdrive% >nul 2>&1 && goto :Privileges_got
+if "%1"=="%Variable%" (
+  echo.
+  echo Please right-click this file and select "Run as administrator".
+  echo Press any key to exit.
+  pause >nul 2>&1
+  exit
+)
+cmd /u /c echo Set UAC = CreateObject^("Shell.Application"^) : UAC.ShellExecute "%~0", "%Variable%", "", "runas", 1 > "%temp%\getadmin.vbs"
+cscript //nologo "%temp%\getadmin.vbs"
+exit
+
+:Privileges_got
+setlocal EnableExtensions EnableDelayedExpansion
+cd /d "%~dp0"
 
 :begin
 echo ============================================================
