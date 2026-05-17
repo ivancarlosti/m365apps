@@ -1,4 +1,6 @@
-# m365apps
+# Microsoft 365 Apps script
+
+A lightweight, menu-driven script that installs (or uninstalls) Microsoft 365 Apps on Windows using Microsoft's official Office Deployment Tool (ODT) and curated XML configurations.
 
 <!-- buttons -->
 [![Stars](https://img.shields.io/github/stars/ivancarlosti/m365apps?label=⭐%20Stars&color=gold&style=flat)](https://github.com/ivancarlosti/m365apps/stargazers)
