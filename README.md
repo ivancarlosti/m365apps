@@ -16,6 +16,98 @@
 [![Patreon](https://img.shields.io/badge/Patreon-f96854)][patreon]
 <!-- endbuttons -->
 
+## 📦 About
+
+`m365apps` is a self-contained Windows installer that wraps the official
+[Microsoft Office Deployment Tool (ODT)](https://learn.microsoft.com/en-us/deployoffice/overview-office-deployment-tool)
+with a friendly menu. It downloads the latest `setup.exe` straight from
+Microsoft's CDN at runtime, then drives it with one of the curated XML
+configurations under [XMLFiles/](XMLFiles/) so you can install or uninstall
+Microsoft 365 Apps (Business, Enterprise or Home, with optional Project and
+Visio) without manually crafting a configuration file.
+
+## 🚀 Usage
+
+1. Download the latest release (or clone this repo).
+2. Right-click [m365apps.bat](m365apps.bat) and choose **Run as administrator**.
+3. Pick an option from the menu and let the installer run.
+
+The script will self-elevate via UAC if you forget the right-click step.
+
+## ⚙️ How the script works
+
+[m365apps.bat](m365apps.bat) runs in four stages:
+
+### 1. Elevation
+The first block checks whether the script is already running with
+administrative rights. If not, it generates a small VBScript in `%TEMP%` that
+re-launches the batch file through `ShellExecute ... "runas"`, triggering the
+UAC prompt. Once elevated, execution jumps to the `:Privileges_got` label.
+
+### 2. Bootstrap the Office Deployment Tool
+Instead of shipping `setup.exe` in the repository, the script downloads a
+fresh copy from Microsoft on every run:
+
+```
+SETUP_URL = https://officecdn.microsoft.com/pr/wsus/setup.exe
+SETUP_DIR = %TEMP%\m365apps
+SETUP_EXE = %TEMP%\m365apps\setup.exe
+```
+
+- The temp folder is created if missing.
+- Any leftover `setup.exe` from a previous run is removed first, so you always
+  use the latest signed binary published by Microsoft.
+- The download is performed by the built-in `curl.exe` (available on Windows
+  10 1803+ and Windows 11) with `-fSL` so failures abort the script with a
+  clear message.
+
+### 3. Interactive menu
+A `choice /c 1234567890` prompt presents ten options:
+
+| Key | Action |
+| :-: | :----- |
+| 1 | Install Office Business + Project + Visio (US + BR + MX) |
+| 2 | Install Office Business (US + BR + MX) |
+| 3 | Install Office Business (Brazil only) |
+| 4 | Install Office Enterprise + Project + Visio (US + BR + MX) |
+| 5 | Install Office Enterprise (US + BR + MX) |
+| 6 | Install Office Enterprise (Brazil only) |
+| 7 | Install Office Home + Project + Visio (US + BR + MX) |
+| 8 | Install Office Home (US + BR + MX) |
+| 9 | Install Office Home (Brazil only) |
+| 0 | Uninstall all Office packages |
+
+Each selection sets `DESC` (label shown to the user) and `XML` (path to the
+matching configuration under [XMLFiles/](XMLFiles/)) and jumps to a single
+`:run` label that invokes:
+
+```
+"%SETUP_EXE%" /configure "%XML%"
+```
+
+This is the standard ODT command — `setup.exe` reads the XML, contacts
+Microsoft's CDN and installs/uninstalls the requested products and languages.
+
+### 4. Cleanup
+When `setup.exe` returns control, the script deletes the temporary
+`setup.exe` and removes `%TEMP%\m365apps`, leaving no binaries behind. It then
+pauses so you can confirm that the Office installer started before closing
+the window.
+
+## 🗂️ Configuration files
+
+The XML files under [XMLFiles/](XMLFiles/) follow the standard
+[Office Deployment Tool schema](https://learn.microsoft.com/en-us/deployoffice/office-deployment-tool-configuration-options).
+Edit them (or drop new ones in) to customise products, languages, channels or
+excluded apps, then point a new menu entry at the file.
+
+## 🛠️ Requirements
+
+- Windows 10 1803 or later (for the built-in `curl.exe`) / Windows 11.
+- Administrator rights (the script self-elevates).
+- An active internet connection — `setup.exe` and the Office payload are both
+  downloaded from Microsoft.
+
 <!-- footer -->
 ---
 

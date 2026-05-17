@@ -19,6 +19,26 @@ exit
 setlocal EnableExtensions EnableDelayedExpansion
 cd /d "%~dp0"
 
+:: Download the latest Office Deployment Tool to a temporary folder
+set "SETUP_URL=https://officecdn.microsoft.com/pr/wsus/setup.exe"
+set "SETUP_DIR=%temp%\m365apps"
+set "SETUP_EXE=%SETUP_DIR%\setup.exe"
+
+if not exist "%SETUP_DIR%" mkdir "%SETUP_DIR%" >nul 2>&1
+if exist "%SETUP_EXE%" del /f /q "%SETUP_EXE%" >nul 2>&1
+
+echo Downloading the latest Office Deployment Tool from Microsoft...
+curl.exe -fSL -o "%SETUP_EXE%" "%SETUP_URL%"
+if not exist "%SETUP_EXE%" (
+    echo.
+    echo ERROR: Failed to download setup.exe from Microsoft.
+    echo Please check your internet connection and try again.
+    pause
+    exit /b 1
+)
+echo Download complete.
+echo.
+
 :begin
 echo ============================================================
 echo                MICROSOFT OFFICE INSTALLER
@@ -44,70 +64,29 @@ choice /c 1234567890 /n /m "Selection: "
 :: Errorlevel 1 corresponds to "1", errorlevel 10 corresponds to "0"
 set op=%errorlevel%
 
-if %op%==1 goto op1
-if %op%==2 goto op2
-if %op%==3 goto op3
-if %op%==4 goto op4
-if %op%==5 goto op5
-if %op%==6 goto op6
-if %op%==7 goto op7
-if %op%==8 goto op8
-if %op%==9 goto op9
-if %op%==10 goto op0
+if %op%==1  (set "DESC=Office Business + Project + Visio (US+BR+MX)"   & set "XML=XMLFiles/InstallOfficeProjectVisio-Business.xml"   & goto run)
+if %op%==2  (set "DESC=Office Business (US+BR+MX)"                     & set "XML=XMLFiles/InstallOffice-Business-US.xml"           & goto run)
+if %op%==3  (set "DESC=Office Business (Brazil)"                       & set "XML=XMLFiles/InstallOffice-Business-BR.xml"           & goto run)
+if %op%==4  (set "DESC=Office Enterprise + Project + Visio (US+BR+MX)" & set "XML=XMLFiles/InstallOfficeProjectVisio-Enterprise.xml" & goto run)
+if %op%==5  (set "DESC=Office Enterprise (US+BR+MX)"                   & set "XML=XMLFiles/InstallOffice-Enterprise-US.xml"         & goto run)
+if %op%==6  (set "DESC=Office Enterprise (Brazil)"                     & set "XML=XMLFiles/InstallOffice-Enterprise-BR.xml"         & goto run)
+if %op%==7  (set "DESC=Office Home + Project + Visio (US+BR+MX)"       & set "XML=XMLFiles/InstallOfficeProjectVisio-Home.xml"      & goto run)
+if %op%==8  (set "DESC=Office Home (US+BR+MX)"                         & set "XML=XMLFiles/InstallOffice-Home-US.xml"               & goto run)
+if %op%==9  (set "DESC=Office Home (Brazil)"                           & set "XML=XMLFiles/InstallOffice-Home-BR.xml"               & goto run)
+if %op%==10 (set "DESC=Uninstall All Office Packages"                  & set "XML=XMLFiles/UninstallOffice.xml"                     & goto run)
 
-:op1
-echo Installing Office Business + Project + Visio (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Business.xml"
-goto end
-
-:op2
-echo Installing Office Business (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Business-US.xml"
-goto end
-
-:op3
-echo Installing Office Business (Brazil), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Business-BR.xml"
-goto end
-
-:op4
-echo Installing Office Enterprise + Project + Visio (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Enterprise.xml"
-goto end
-
-:op5
-echo Installing Office Enterprise (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Enterprise-US.xml"
-goto end
-
-:op6
-echo Installing Office Enterprise (Brazil), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Enterprise-BR.xml"
-goto end
-
-:op7
-echo Installing Office Home + Project + Visio (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOfficeProjectVisio-Home.xml"
-goto end
-
-:op8
-echo Installing Office Home (US+BR+MX), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Home-US.xml"
-goto end
-
-:op9
-echo Installing Office Home (Brazil), please wait...
-setup.exe /configure "XMLFiles/InstallOffice-Home-BR.xml"
-goto end
-
-:op0
-echo Uninstalling Office, please wait...
-setup.exe /configure "XMLFiles/UninstallOffice.xml"
+:run
+echo.
+echo Running: %DESC%, please wait...
+"%SETUP_EXE%" /configure "%XML%"
 goto end
 
 :end
 echo.
 echo ============================================================
 echo Process finished. Please check if the Office Setup started.
+echo Cleaning up temporary files...
+if exist "%SETUP_EXE%" del /f /q "%SETUP_EXE%" >nul 2>&1
+if exist "%SETUP_DIR%" rmdir "%SETUP_DIR%" >nul 2>&1
 pause
 exit
