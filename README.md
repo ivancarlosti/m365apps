@@ -7,15 +7,14 @@ A lightweight, menu-driven script that installs (or uninstalls) Microsoft 365 Ap
 [![Watchers](https://img.shields.io/github/watchers/ivancarlosti/m365apps?label=Watchers&style=flat&color=red)](https://github.com/sponsors/ivancarlosti)
 [![Forks](https://img.shields.io/github/forks/ivancarlosti/m365apps?label=Forks&style=flat&color=ff69b4)](https://github.com/sponsors/ivancarlosti)
 [![Downloads](https://img.shields.io/github/downloads/ivancarlosti/m365apps/total?label=Downloads&color=success)](https://github.com/ivancarlosti/m365apps/releases)
-[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ivancarlosti/m365apps?label=Activity)](https://github.com/ivancarlosti/m365apps/pulse)  
-[![GitHub Issues](https://img.shields.io/github/issues/ivancarlosti/m365apps?label=Issues&color=orange)](https://github.com/ivancarlosti/m365apps/issues)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/ivancarlosti/m365apps?label=Activity)](https://github.com/ivancarlosti/m365apps/pulse)
+[![GitHub Issues](https://img.shields.io/github/issues/ivancarlosti/m365apps?label=Issues&color=orange)](https://github.com/ivancarlosti/m365apps/issues)  
 [![License](https://img.shields.io/github/license/ivancarlosti/m365apps?label=License)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/ivancarlosti/m365apps?label=Last%20Commit)](https://github.com/ivancarlosti/m365apps/commits)
-[![Security](https://img.shields.io/badge/Security-View%20Here-purple)](https://github.com/ivancarlosti/m365apps/security)  
-[![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-2.1-4baaaa)](https://github.com/ivancarlosti/m365apps?tab=coc-ov-file)
+[![Security](https://img.shields.io/badge/Security-View%20Here-purple)](https://github.com/ivancarlosti/m365apps/security)
+[![Code of Conduct](https://img.shields.io/badge/Code%20of%20Conduct-2.1-4baaaa)](https://github.com/ivancarlosti/m365apps?tab=coc-ov-file)  
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/ivancarlosti?label=GitHub%20Sponsors&color=ffc0cb)][sponsor]
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00)][buymeacoffee]
-[![Patreon](https://img.shields.io/badge/Patreon-f96854)][patreon]
 <!-- endbuttons -->
 
 ## 📦 About
